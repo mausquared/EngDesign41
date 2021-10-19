@@ -1,0 +1,13 @@
+from gpiozero import Button
+import pygame 
+
+pygame.mixer.init() # initializes mixer module of pygame
+pygame.mixer.music.load("myFile.wav") # load the music file to the mixer
+while pygame.mixer.music.get_busy() == True:
+    continue
+
+
+button = Button(18) #pin button should be inbetween brackets
+if button.wait_for_press() == True:
+    print("button was pressed")
+    pygame.mixer.music.play() # play sound of the mixer 
