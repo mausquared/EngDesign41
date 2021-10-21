@@ -7,6 +7,8 @@ import imutils
 import pickle
 import RPi.GPIO as GPIO
 from time import sleep
+from gpiozero import Button
+import pygame 
 
 GPIO.setmode(GPIO.BOARD) #setup pins for correct gpio 
 GPIO.setup(3,GPIO.OUT) #set pin 3 for output of PWM signal
@@ -34,6 +36,19 @@ def CloseDoor():
     SetAngle(50)
     pwm.stop()
     GPIO.cleanup()
+    
+def button_press(): #function for button press
+    pygame.mixer.init() # initializes mixer module of pygame
+    pygame.mixer.music.load(random.choice(music_list)) # load the music file to the mixer
+    while pygame.mixer.music.get_busy() == True:
+        continue     
+    print("Button pressed")
+    pygame.mixer.music.play()
+
+music_list = ['dababy.mp3', 'amongus.mp3', 'doorbell-1.mp3', 'fbi.mp3','windowsxp.mp3','profanity.mp3']
+button = Button(18)
+while(True):
+    button.when_pressed = button_press
 
 #from imutils.video import VideoStream
 
