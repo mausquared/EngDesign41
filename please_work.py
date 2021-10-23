@@ -8,12 +8,16 @@ import pickle
 import RPi.GPIO as GPIO
 from time import sleep
 from gpiozero import Button
-import pygame 
+import pygame
+import random
+from num2words import num2words
+from subprocess import call
 
 GPIO.setmode(GPIO.BOARD) #setup pins for correct gpio 
 GPIO.setup(3,GPIO.OUT) #set pin 3 for output of PWM signal
 pwm=GPIO.PWM(3,60) #set the rate for the PWM 
 pwm.start(0) #start the PWM 
+
 
 def SetAngle(angle):
     duty = angle / 18+2
@@ -23,7 +27,7 @@ def SetAngle(angle):
     GPIO.output(3, False)
     pwm.ChangeDutyCycle(0)
 
-def OpenDoor(x):
+def OpenDoor():
     SetAngle(180) #rotates the servo anticlockwise
     SetAngle(180)
     SetAngle(180)
@@ -44,11 +48,33 @@ def button_press(): #function for button press
         continue     
     print("Button pressed")
     pygame.mixer.music.play()
+    
+def TTS(name):
+    
+    cmd_beg= 'espeak '
+    cmd_end= ' | aplay /home/pi/Desktop/Text.wav  2>/dev/null' # To play back the stored .wav file and to dump the std errors to /dev/null
+    cmd_out= '--stdout > /home/pi/Desktop/Text.wav ' # To store the voice file    espeak.set_parameter(espeak.Paameter.rate,100)
+    
+    text = name 
+    #print(text)
+    #Replacing ' ' with '_' to identify words in the text entered
+    text = text.replace(' ', '_')
+
+    #Calls the Espeak TTS Engine to read aloud a Text
+    call([cmd_beg+cmd_out+text+cmd_end], shell=True)
+
+    print("script finished")
+    
+    #calling this function should be done in this manner:
+    #TTS(name)
+    #sleep(0.5)
+    #TTS("Is at the door")
+
 
 music_list = ['dababy.mp3', 'amongus.mp3', 'doorbell-1.mp3', 'fbi.mp3','windowsxp.mp3','profanity.mp3']
 button = Button(18)
-while(True):
-    button.when_pressed = button_press
+# while(True):
+#     button.when_pressed = button_press
 
 #from imutils.video import VideoStream
 
@@ -69,6 +95,8 @@ data = pickle.loads(open(encodingsP, "rb").read())
 time.sleep(0.1)
 
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    
+    button.when_pressed = button_press
     
     image = frame.array
     
@@ -93,6 +121,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
             if currentname != name:
                 currentname = name
                 print(currentname)
+                TTS(name)
+                sleep(.5)
+                TTS("Is at your front door)
+                
+            else:
+                TTS("Uknown person")
+                sleep(.5)
+                TTS("At the front door")
                 
                 ### hier wat er moet gebeuren bij een algemene hit
                 ### dus bvb message zenden of signal zenden of etc.
@@ -100,10 +136,11 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                 
                 ### dit hier onder is voor een servo, maar kan nu niet testen want geen servo
                 
-             if name == "Luc":
-                OpenDoor()
-                sleep(1)
-                CloseDoor()
+#              if name == "Luc":
+#                 OpenDoor()
+#                 sleep(1)
+#                 CloseDoor()
+        
                 
             
         
