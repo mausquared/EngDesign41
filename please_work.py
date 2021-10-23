@@ -123,7 +123,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                 print(currentname)
                 TTS(name)
                 sleep(.5)
-                TTS("Is at your front door)
+                TTS("Is at your front door")
                 
             else:
                 TTS("Uknown person")
