@@ -71,7 +71,7 @@ def TTS(name):
     #TTS("Is at the door")
 
 
-music_list = ['dababy.mp3', 'amongus.mp3', 'doorbell-1.mp3', 'fbi.mp3','windowsxp.mp3','profanity.mp3']
+music_list = ['doorbell-1.mp3']
 button = Button(18)
 # while(True):
 #     button.when_pressed = button_press
